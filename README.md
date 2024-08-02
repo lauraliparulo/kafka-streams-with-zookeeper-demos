@@ -1,4 +1,7 @@
-# Kafka Streams Application
+# Kafka Streams With Zookeeper Demo Applications
+
+Inspired by the Oreilly's sandboxed...
+
 A template for a brand new Kafka Streams application. Includes:
 
 - Docker Compose configurations for running a local Kafka cluster
@@ -24,6 +27,42 @@ cd app/
 
 # you should see the test data get printed to your screen
 ```
+
+## Interact with the Kafka cluster
+
+Run "docker-compose up -d" to get kafka + zookeeper running!
+
+Then run the following to access the Kafka container:
+> docker-compose exec kafka bash
+
+Once accessed the kafka container, to create a Kafka Topic run:
+> $ kafka-topics --bootstrap-server localhost:9092 --create --topic tweets --partitions 4
+
+To list kafka topics, use the kafka-topics script:
+> kafka-topics  --bootstrap-server localhost:9092 --list
+
+To produce data to a Kafka topic, use :
+> kafka-console-producer  --bootstrap-server localhost:9092 --topic tweets --property 'key.separator=|'  --property 'parse.key=true'
+
+Then type: "1|{"id": 1, "name": "Elyse"} 2|{"id": 2, "name": "Mitch"}"
+
+Instead of adding the messages manually in the prompt, you can as well use a file. For example "inputs.txt":
+
+``
+3|{"id": 3, "name": "Isabelle"}
+``
+``
+4|{"id": 4, "name": "Chloe"}
+``
+
+Then run:
+kafka-console-producer --bootstrap-server localhost:9092 --topic tweets --property 'parse.key=true' --property 'key.separator=|' < /data/inputs.txt 
+
+To verify that the kafka broker got the messages from the producer, you can use the kafka-console-consumer:
+> kafka-console-consumer --bootstrap-server localhost:9092 --topic tweets --from-beginning --property print.key=true
+
+Notice that the order in which the messages arrive might be different, according to the kafka brokers processing.
+
 
 # Customizing
 - The script for pre-creating and pre-populating topics can be found in [/scripts/bootstrap-topics.sh](/scripts/bootstrap-topics.sh)
